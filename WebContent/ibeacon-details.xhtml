@@ -1,0 +1,60 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.prime.com.tr/ui">
+      
+      <h:head>
+      	<title>iBeacon</title>
+      </h:head>
+      
+      <h:body>
+      	<h1>iBeacon</h1>
+     
+      	<h:form>
+      	
+      	<p:dataTable id="data_table"
+      	 value="#{allBeaconPageBean.allBeacon}"
+      	             var="beacon"
+      	             binding="#{allBeaconPageBean.dataTable}">      	
+      		
+      		<p:column>
+      		   <f:facet name="header">UUID</f:facet>     		        		   
+      		   <h:commandLink action="#{allBeaconPageBean.deleteAllBeacon}">     		   
+      		      #{beacon.UUID}
+      		   </h:commandLink>      		         		   
+      		</p:column>
+      		
+      		<p:column>
+ 			   <f:facet name="header">Major</f:facet>    		           			   		   
+      		      #{beacon.major}     		 
+      		</p:column>
+      		<p:column>
+ 			   <f:facet name="header">Minor</f:facet>    		           			   		   
+      		      #{beacon.minor}     		 
+      		</p:column>
+      		<p:column>
+ 			   <f:facet name="header">Time of Detection</f:facet>    		           			   		   
+      		      #{beacon.date}     		 
+      		</p:column>
+      					   
+      		<p:column>
+ 			   <f:facet name="header">Power</f:facet>    		           			   		   
+      		      #{beacon.power}     		 
+      		</p:column>
+      		<p:column>
+ 			   <f:facet name="header">UniqueID</f:facet>    		           			   		   
+      		      #{beacon.uinqueID}     		 
+      		</p:column>
+      			
+      	</p:dataTable>
+      	<p:poll interval="3"   
+      update="data_table" >
+        </p:poll>  
+      
+      	
+      	</h:form>
+
+
+
+</h:body>          
+</html>      

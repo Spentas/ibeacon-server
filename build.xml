@@ -1,0 +1,112 @@
+<project name="JavaEE Build" default="BuildAll">
+    			
+	<property name="glassfish_libs" value="/Applications/NetBeans/glassfish-4.1/glassfish/modules"/>
+	
+    <property name="bin" value="./bin"/>
+    <property name="lib" value="./lib"/>
+    <property name="src" value="./src"/> 
+    <property name="dist" value="./dist"/>
+	<property name="jarfile" value="${dist}/ejb.jar"/>
+	<property name="warfile" value="${dist}/webapp.war"/>	
+	<property name="html" value="./WebContent"/>
+    
+    <path id="my.classpath">
+        <pathelement path="${java.class.path}"/>
+        <pathelement location="${bin}"/>
+        
+        <fileset dir="${lib}">
+            <include name="*.jar"/>
+        </fileset>
+    	
+    	<fileset dir="${glassfish_libs}">
+    		<include name="**/javax*.jar"/>
+    		<include name="jsf-api.jar"/>
+    		<include name="security.jar"/>
+    	</fileset>
+    </path>	 
+	
+    <target name="BuildAll"
+            depends="clean, prep, compile, jar, war"
+            description="Complete rebuild.">
+        <echo message="Build complete."/>
+    </target>	
+	
+	<target name="classpath">
+		   <property name="current.classpath" refid="my.classpath"/>
+		   
+		   <echo level="info">
+		   Classpath is :
+		      ${current.classpath}
+		   </echo>
+	</target>
+    
+    <target name="clean">
+        <delete dir="${bin}"/>
+        <delete dir="${dist}"/>
+        <delete>
+           <fileset dir=".">
+              <include name="TEST*.xml"/>
+           </fileset>
+        </delete>
+    </target>
+    
+    <target name="prep">        
+        <mkdir dir="${bin}"/>
+        <mkdir dir="${dist}"/>        
+    </target>
+            
+    <target name="compile"
+     description="Compile all Java classes"
+    	depends="prep">
+        
+        <javac srcdir="${src}" destdir="${bin}" debug="true" encoding="ISO-8859-1">
+            <classpath refid="my.classpath"/>
+        </javac>
+        
+        <echo message="Compiled."/>
+    </target>
+	
+	<target name="jar" depends="compile" 
+	                         description="Build EJB Jar files.">
+	   <delete file="${jarfile}"/>
+
+	   <jar destfile="${jarfile}" basedir="${bin}">
+
+		  <metainf dir="${src}/META-INF">
+		   	   <include name="persistence.xml"/>
+		   </metainf>
+		  
+	   </jar>
+	</target>
+	
+	<target name="war" depends="compile" 
+	                         description="Build WAR file.">
+		<copy todir="${bin}">
+			<fileset dir="${src}">
+				<include name="**/persistence.xml"/>
+			</fileset>
+		</copy>
+	   <delete file="${warfile}"/>
+	   <war destfile="${warfile}" webxml="web.xml">
+	      <classes dir="${bin}">
+	      </classes>
+	   	
+      	  <lib dir="${lib}"/>
+	      <fileset dir="${html}"/>  <!-- html files -->	  
+	   	  <!-- The following block is commented out, until 
+	   	       security. -->
+	   	  <!--
+	   	  <webinf dir="${src}/META-INF">
+	   		 <include name="sun-ejb-jar.xml"/> 				
+	      </webinf>
+	      --> 
+	   </war>
+	</target>
+	
+	<target name="ear" depends="war, jar" description="The full ear file">
+       <ear destfile="${dist}/fullapplication.ear" appxml="application.xml">
+         <fileset dir="${dist}" includes="*.jar,*.war"/>
+       </ear>
+	</target>
+
+</project>
